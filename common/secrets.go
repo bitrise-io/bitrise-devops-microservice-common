@@ -1,15 +1,14 @@
 package common
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/bitrise-io/go-utils/envutil"
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/pkg/errors"
 	"github.com/viktorbenei/bitrise-devops-microservice-common/common/logger"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
 )
 
 // Config ...
@@ -21,23 +20,16 @@ func LoadSecret(secretKey string) (string, error) {
 		return envVar, nil
 	}
 
-	// check in file
-	secretConfigPath := envutil.GetenvWithDefault("SECRETS_CONFIG_FILE_PATH", "/var/secret/config.yaml")
-	fileContBytes, err := fileutil.ReadBytesFromFile(secretConfigPath)
+	// check in files
+	secretConfigDirPath := envutil.GetenvWithDefault("SECRETS_CONFIG_DIR_PATH", "/var/secret")
+	secretConfigFilePath := filepath.Join(secretConfigDirPath, secretKey)
+	secretValue, err := fileutil.ReadStringFromFile(secretConfigFilePath)
 	if err != nil {
 		logger.L.Error("Failed to open secret config file",
-			zap.String("path", secretConfigPath),
+			zap.String("path", secretConfigFilePath),
 		)
 	} else {
-		var config Config
-		if err := yaml.Unmarshal(fileContBytes, &config); err != nil {
-			logger.L.Error("Failed to parse secret config file",
-				zap.String("error", fmt.Sprintf("%+v", err)),
-			)
-		}
-		if val, ok := config[secretKey]; ok {
-			return val, nil
-		}
+		return secretValue, nil
 	}
 
 	// not found
