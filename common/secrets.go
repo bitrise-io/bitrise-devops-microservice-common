@@ -28,6 +28,10 @@ func LoadSecret(secretKey string) (string, error) {
 		logger.L.Error("Failed to open secret config file",
 			zap.String("path", secretConfigFilePath),
 		)
+	} else if len(secretValue) < 1 {
+		logger.L.Error("Secret file found but was empty",
+			zap.String("path", secretConfigFilePath),
+		)
 	} else {
 		return secretValue, nil
 	}
