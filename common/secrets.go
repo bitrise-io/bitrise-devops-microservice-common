@@ -7,7 +7,7 @@ import (
 	"github.com/bitrise-io/go-utils/envutil"
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/pkg/errors"
-	"github.com/viktorbenei/bitrise-devops-microservice/services/notes/common/logger"
+	"github.com/viktorbenei/bitrise-devops-microservice-common/common/logger"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
