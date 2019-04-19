@@ -14,14 +14,20 @@ import (
 // Config ...
 type Config map[string]string
 
-// LoadSecret ...
-func LoadSecret(secretKey string) (string, error) {
+// LoadSecret returns the secret from Env Var or from a secret file.
+// If subPath is specified it'll search for the secret file in that sub directory.
+// The secret file's name has to match the secretKey, and should
+// have no extension.
+func LoadSecret(secretKey, subPath string) (string, error) {
 	if envVar := os.Getenv(secretKey); len(envVar) > 0 {
 		return envVar, nil
 	}
 
 	// check in files
 	secretConfigDirPath := envutil.GetenvWithDefault("SECRETS_CONFIG_DIR_PATH", "/var/secret")
+	if len(subPath) > 0 {
+		secretConfigDirPath = filepath.Join(secretConfigDirPath, subPath)
+	}
 	secretConfigFilePath := filepath.Join(secretConfigDirPath, secretKey)
 	secretValue, err := fileutil.ReadStringFromFile(secretConfigFilePath)
 	if err != nil {
