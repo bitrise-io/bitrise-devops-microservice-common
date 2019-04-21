@@ -8,8 +8,6 @@ import (
 	"github.com/bitrise-io/go-utils/fileutil"
 	"github.com/bitrise-io/go-utils/pathutil"
 	"github.com/pkg/errors"
-	"github.com/viktorbenei/bitrise-devops-microservice-common/common/logger"
-	"go.uber.org/zap"
 )
 
 // Config ...
@@ -30,23 +28,9 @@ func LoadSecret(secretKey string) (string, error) {
 	// Continue if not.
 	secretConfigDirPath := envutil.GetenvWithDefault("SECRETS_CONFIG_DIR_PATH", "/var/secret")
 	secretConfigFilePath := filepath.Join(secretConfigDirPath, secretKey)
-	if exist, err := pathutil.IsPathExists(secretConfigFilePath); err != nil {
-		logger.L.Error("Failed to check if secret file exist at path",
-			zap.String("path", secretConfigFilePath),
-			zap.Error(err),
-		)
-	} else if exist {
+	if exist, err := pathutil.IsPathExists(secretConfigFilePath); err == nil && exist {
 		secretValue, err := fileutil.ReadStringFromFile(secretConfigFilePath)
-		if err != nil {
-			logger.L.Error("Failed to open secret config file",
-				zap.String("path", secretConfigFilePath),
-				zap.Error(err),
-			)
-		} else if len(secretValue) < 1 {
-			logger.L.Error("Secret file found but was empty",
-				zap.String("path", secretConfigFilePath),
-			)
-		} else {
+		if err == nil && len(secretValue) > 0 {
 			return secretValue, nil
 		}
 	}
@@ -55,33 +39,10 @@ func LoadSecret(secretKey string) (string, error) {
 	// Continue if not.
 	filepathPattern := filepath.Join(secretConfigDirPath, "*", secretKey)
 	files, err := filepath.Glob(filepathPattern)
-	if err != nil {
-		logger.L.Error("Failed to list files for pattern",
-			zap.String("path", filepathPattern),
-			zap.Error(err),
-		)
-	}
-	if len(files) < 1 {
-		logger.L.Error("No file found for pattern",
-			zap.String("path", filepathPattern),
-		)
-	} else if len(files) > 1 {
-		logger.L.Error("More than 1 file found for pattern",
-			zap.String("path", filepathPattern),
-		)
-	} else {
+	if err == nil && len(files) == 1 {
 		secretConfigFilePath := files[0]
 		secretValue, err := fileutil.ReadStringFromFile(secretConfigFilePath)
-		if err != nil {
-			logger.L.Error("Failed to open secret config file",
-				zap.String("path", secretConfigFilePath),
-				zap.Error(err),
-			)
-		} else if len(secretValue) < 1 {
-			logger.L.Error("Secret file found but was empty",
-				zap.String("path", secretConfigFilePath),
-			)
-		} else {
+		if err == nil && len(secretValue) > 0 {
 			return secretValue, nil
 		}
 	}
