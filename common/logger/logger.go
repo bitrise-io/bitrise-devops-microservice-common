@@ -7,6 +7,7 @@ import (
 // L is the global Logger
 var L *zap.Logger
 
+// Init ...
 func Init() {
 	logger, err := zap.NewProduction()
 	if err != nil {
@@ -15,6 +16,7 @@ func Init() {
 	L = logger
 }
 
-func Close() {
-	L.Sync()
+// Close ...
+func Close() error {
+	return L.Sync()
 }

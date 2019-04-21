@@ -17,7 +17,9 @@ func TestLoadSecret(t *testing.T) {
 	t.Log("Read from env var")
 	{
 		revokeFn, err := envutil.RevokableSetenv("SECRET_KEY_1", "secret value 1")
-		defer revokeFn()
+		defer func() {
+			require.NoError(t, revokeFn())
+		}()
 		require.NoError(t, err)
 
 		secretValue, err := LoadSecret("SECRET_KEY_1")
@@ -30,7 +32,9 @@ func TestLoadSecret(t *testing.T) {
 	require.NoError(t, err)
 
 	revokeFn, err := envutil.RevokableSetenv("SECRETS_CONFIG_DIR_PATH", secretsDirPath)
-	defer revokeFn()
+	defer func() {
+		require.NoError(t, revokeFn())
+	}()
 	require.NoError(t, err)
 	defer func() {
 		require.NoError(t, os.RemoveAll(secretsDirPath))
