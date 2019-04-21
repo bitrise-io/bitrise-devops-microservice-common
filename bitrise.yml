@@ -4,7 +4,15 @@ project_type: other
 workflows:
   primary:
     steps:
-    - go-list:
-    - golint:
-    - errcheck:
-    - go-test:
+    - script@1.1.5:
+        title: go mod download
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -ex
+
+            go mod download
+    - go-list@0.9.0: {}
+    - golint: {}
+    - errcheck: {}
+    - go-test: {}
