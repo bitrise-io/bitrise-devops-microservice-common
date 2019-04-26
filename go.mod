@@ -1,4 +1,4 @@
-module github.com/viktorbenei/bitrise-devops-microservice-common
+module github.com/bitrise-io/bitrise-devops-microservice-common
 
 require (
 	github.com/bitrise-io/go-utils v0.0.0-20181112170818-2a09aab8380d
