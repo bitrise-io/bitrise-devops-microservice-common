@@ -50,3 +50,18 @@ func LoadSecret(secretKey string) (string, error) {
 	// not found
 	return "", errors.Errorf("Secret (%s) not found", secretKey)
 }
+
+// LoadSecrets - calls LoadSecrets for all the provided keys and returns
+// all the corresponding secret values. If any of the LoadSecrets calls
+// returns an errors this function will return the error and stop loading other secrets.
+func LoadSecrets(secretKeys []string) (map[string]string, error) {
+	secretValues := map[string]string{}
+	for _, aSecretKey := range secretKeys {
+		aSecretValue, err := LoadSecret(aSecretKey)
+		if err != nil {
+			return secretValues, errors.WithStack(err)
+		}
+		secretValues[aSecretKey] = aSecretValue
+	}
+	return secretValues, nil
+}

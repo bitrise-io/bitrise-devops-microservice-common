@@ -90,3 +90,27 @@ func TestLoadSecret(t *testing.T) {
 		require.Equal(t, "", secretValue)
 	}
 }
+
+func TestLoadSecrets(t *testing.T) {
+	t.Log("Read from env var")
+	{
+		{
+			revokeFn, err := envutil.RevokableSetenv("SECRET_KEY_1", "secret value 1")
+			defer func() {
+				require.NoError(t, revokeFn())
+			}()
+			require.NoError(t, err)
+		}
+		{
+			revokeFn2, err := envutil.RevokableSetenv("SECRET_KEY_2", "secret value 2")
+			defer func() {
+				require.NoError(t, revokeFn2())
+			}()
+			require.NoError(t, err)
+		}
+
+		secretValues, err := LoadSecrets([]string{"SECRET_KEY_1", "SECRET_KEY_2"})
+		require.NoError(t, err)
+		require.Equal(t, map[string]string{"SECRET_KEY_1": "secret value 1", "SECRET_KEY_2": "secret value 2"}, secretValues)
+	}
+}
