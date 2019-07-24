@@ -111,6 +111,6 @@ func TestLoadSecrets(t *testing.T) {
 
 		secretValues, err := LoadSecrets([]string{"SECRET_KEY_1", "SECRET_KEY_2"})
 		require.NoError(t, err)
-		require.Equal(t, []string{"secret value 1", "secret value 2"}, secretValues)
+		require.Equal(t, map[string]string{"SECRET_KEY_1": "secret value 1", "SECRET_KEY_2": "secret value 2"}, secretValues)
 	}
 }
