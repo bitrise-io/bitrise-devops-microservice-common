@@ -8,3 +8,5 @@ require (
 	github.com/stretchr/testify v1.3.0
 	go.uber.org/zap v1.10.0
 )
+
+go 1.13
